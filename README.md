@@ -1,13 +1,11 @@
-*Jay Jacobs, August 8th, 2014*
-
-This is an implement of a classification algorithm trained on 74,954 legitamate domains (taken from the Alexa list of popular web sites and the Open DNS popular domains list), as well as 35,154 algorithmically generated domains from the Cryptolocker and GOZ botnet. 80% was used in the training with 20% left for testing.
+This is an implement of a classification algorithm trained on legitamate domains (taken from the Alexa list of popular web sites and the Open DNS popular domains list), as well as algorithmically generated domains from the Cryptolocker and GOZ botnet.
 
 Given a domain name the function will classify it as either "dga" or "legit" and include the probability of the classification.
 
 Begin by loading up the DGA library (note: you may get an error on install\_github if you had never ‘git clone’d before, or added the host as a known SSH host).
 
 ``` {.r}
-install_git(“ssh://git@gitlab.dds.ec:22022/jay.jacobs/dga.git”)
+devtools::install_github("jayjacobs/dga")
 ```
 
 ``` {.r}
@@ -19,11 +17,11 @@ Let's test with the easy most popular websites, and classify them as either "leg
 ``` {.r}
 good20 <- c("facebook.com", "google.com", "youtube.com",
            "yahoo.com", "baidu.com", "wikipedia.org",
-           "amazon.com", "live.com", "qq.com",
+           "amazon.com", "live.com", "quicken.com",
            "taobao.com", "blogspot.com", "google.co.in",
            "twitter.com", "linkedin.com", "yahoo.co.jp",
            "bing.com", "sina.com.cn", "yandex.ru",
-           "msn.com", "vk.com")
+           "msn.com", "vikings.com")
 
 dgaPredict(good20)
 ```
@@ -41,7 +39,7 @@ dgaPredict(good20)
     ## 6  wikipedia legit 0.998
     ## 7     amazon legit 1.000
     ## 8       live legit 1.000
-    ## 9         qq   dga 1.000
+    ## 9    quicken legit 1.000
     ## 10    taobao legit 1.000
     ## 11  blogspot legit 1.000
     ## 12    google legit 1.000
@@ -52,7 +50,7 @@ dgaPredict(good20)
     ## 17      sina legit 1.000
     ## 18    yandex legit 1.000
     ## 19       msn legit 1.000
-    ## 20        vk   dga 1.000
+    ## 20   vikings legit 1.000
 
 Now some domain generated algorithms from the cryptolocker botnet:
 
@@ -60,7 +58,7 @@ Now some domain generated algorithms from the cryptolocker botnet:
 bad20 <- c("btpdeqvfmjxbay.ru", "rrpmjoxjsbsw.ru", "wibiqshumvpns.ru", 
            "mhdvnabqmbwehm.ru", "chyfrroprecy.ru", "uyhdbelswnhkmhc.ru",
            "kqcrotywqigo.ru", "rlvukicfjceajm.ru", "ibxaoddvcped.ru", 
-           "tntuqxxbvxytpif.ru", "heksblnvanyeug.ru", "keaeodsrfafqpdp.ru",
+           "tntuqxxbvxytpif.ru", "heksblnvanyeug.ru", "kexngyjudoptjv.ru",
            "hwenbesxjwrwa.ru", "oovftsaempntpx.ru", "uipgqhfrojbnjo.ru", 
            "igpjponmegrxjtr.ru", "eoitadcdyaeqh.ru", "bqadfgvmxmypkr.ru", 
            "bycoifplnumy.ru", "aeqcwsreocpbm.ru")
@@ -79,7 +77,7 @@ dgaPredict(bad20)
     ## 9     ibxaoddvcped   dga 1.000
     ## 10 tntuqxxbvxytpif   dga 1.000
     ## 11  heksblnvanyeug   dga 0.980
-    ## 12 keaeodsrfafqpdp legit 0.998
+    ## 12  kexngyjudoptjv   dga 1.000
     ## 13   hwenbesxjwrwa   dga 1.000
     ## 14  oovftsaempntpx   dga 1.000
     ## 15  uipgqhfrojbnjo   dga 1.000
@@ -89,35 +87,27 @@ dgaPredict(bad20)
     ## 19    bycoifplnumy   dga 1.000
     ## 20   aeqcwsreocpbm   dga 1.000
 
-Algorithm is about 99.5% effective, so some things are misclassified, the "prob" (probability) column can be used to manually inspect some of the output.
+Algorithm is about 98% effective, so some things are misclassified, the "prob" (probability) column can be used to manually inspect some of the output.
 
 ``` {.r}
-borderline <- c("get-social.info", "nightlife141.com", "dogusyayingrubu.com.tr",
-                "lowesracing.com", "whoisbucket.com", "dhonegcndisiewk.ru", 
-                "gughtatejiarpb.ru", "dubaipolice.gov.ae", "walkerland.com.tw", 
-                "xphsergercoyth.ru", "oceanviewblvd.com", "berndsbumstipps.net", 
-                "ebaumsworld.com", "johnbridge.com", "thumbalizr.com", "superbniews.com")
+borderline <- c("20minutes.fr", "siriusxm.com", "fileblckr.com", "haus-am-brunnen.de", 
+                "left21.com", "rw3ramr.info", "letter861cod.info", "mintadelpyjychw.ru", 
+                "zsdm7erb.us", "surceskmgf.net")
 
 dgaPredict(borderline)
 ```
 
     ##               name class  prob
-    ## 1       get-social legit 1.000
-    ## 2     nightlife141 legit 0.928
-    ## 3  dogusyayingrubu legit 1.000
-    ## 4      lowesracing legit 1.000
-    ## 5      whoisbucket legit 1.000
-    ## 6  dhonegcndisiewk legit 1.000
-    ## 7   gughtatejiarpb   dga 0.532
-    ## 8      dubaipolice legit 1.000
-    ## 9       walkerland legit 1.000
-    ## 10  xphsergercoyth   dga 0.548
-    ## 11   oceanviewblvd legit 1.000
-    ## 12 berndsbumstipps legit 1.000
-    ## 13     ebaumsworld legit 1.000
-    ## 14      johnbridge legit 1.000
-    ## 15      thumbalizr legit 1.000
-    ## 16     superbniews legit 1.000
+    ## 1        20minutes   dga 0.588
+    ## 2         siriusxm   dga 0.550
+    ## 3        fileblckr   dga 0.576
+    ## 4  haus-am-brunnen   dga 0.520
+    ## 5           left21   dga 0.540
+    ## 6          rw3ramr legit 0.546
+    ## 7     letter861cod legit 0.536
+    ## 8  mintadelpyjychw legit 0.522
+    ## 9         zsdm7erb legit 0.524
+    ## 10      surceskmgf legit 0.582
 
 So if the application is more sensitive to misclassification, the threshold for classification can be adjusted up or down, notice the probability shown is the confidence in classification, so it will dip beneath 0.5 for legitimate domains if dgaThreshold is raised.
 
@@ -126,22 +116,16 @@ dgaPredict(borderline, dgaThreshold=0.55)
 ```
 
     ##               name class  prob
-    ## 1       get-social legit 1.000
-    ## 2     nightlife141 legit 0.928
-    ## 3  dogusyayingrubu legit 1.000
-    ## 4      lowesracing legit 1.000
-    ## 5      whoisbucket legit 1.000
-    ## 6  dhonegcndisiewk legit 1.000
-    ## 7   gughtatejiarpb legit 0.468
-    ## 8      dubaipolice legit 1.000
-    ## 9       walkerland legit 1.000
-    ## 10  xphsergercoyth legit 0.452
-    ## 11   oceanviewblvd legit 1.000
-    ## 12 berndsbumstipps legit 1.000
-    ## 13     ebaumsworld legit 1.000
-    ## 14      johnbridge legit 1.000
-    ## 15      thumbalizr legit 1.000
-    ## 16     superbniews legit 1.000
+    ## 1        20minutes   dga 0.588
+    ## 2         siriusxm   dga 0.550
+    ## 3        fileblckr   dga 0.576
+    ## 4  haus-am-brunnen legit 0.480
+    ## 5           left21 legit 0.460
+    ## 6          rw3ramr legit 0.546
+    ## 7     letter861cod legit 0.536
+    ## 8  mintadelpyjychw legit 0.522
+    ## 9         zsdm7erb legit 0.524
+    ## 10      surceskmgf legit 0.582
 
 This uses a Random Forest model:
 
@@ -164,14 +148,3 @@ This uses a Random Forest model:
     ## 
     ## ROC was used to select the optimal model using  the largest value.
     ## The final value used for the model was mtry = 2.
-
-And the confusion matrix:
-
-    ## Cross-Validated (10 fold, repeated 5 times) Confusion Matrix 
-    ## 
-    ## (entries are percentages of table totals)
-    ##  
-    ##           Reference
-    ## Prediction legit  dga
-    ##      legit  43.7  1.0
-    ##      dga     1.0 54.3
