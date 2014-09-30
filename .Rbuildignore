@@ -1,0 +1,4 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+privdata
+README.Rmd

@@ -1,0 +1,71 @@
+---
+title: "Classifying the Output of Domain Generating Algorithms (DGA)"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+This is an implement of a classification algorithm trained on legitamate domains (taken from the Alexa list of popular web sites and the Open DNS popular domains list), as well as algorithmically generated domains from the Cryptolocker and GOZ botnet. 
+
+Given a domain name the \code{dgaPredict} function will classify it as either "dga" or "legit" and include the probability of the classification.  
+
+Begin by loading up the DGA library (note: you may get an error on install_github if you had never ‘git clone’d before, or added the host as a known SSH host).
+
+```{r eval=FALSE}
+devtools::install_github("jayjacobs/dga")
+```
+
+```{r warning=FALSE, message=FALSE}
+library(dga)
+```
+
+Let's test with the easy most popular websites, and classify them as 
+either "legit" or "dga".
+
+```{r}
+good20 <- c("facebook.com", "google.com", "youtube.com",
+           "yahoo.com", "baidu.com", "wikipedia.org",
+           "amazon.com", "live.com", "quicken.com",
+           "taobao.com", "blogspot.com", "google.co.in",
+           "twitter.com", "linkedin.com", "yahoo.co.jp",
+           "bing.com", "sina.com.cn", "yandex.ru",
+           "msn.com", "vikings.com")
+
+dgaPredict(good20)
+```
+
+Now some domain generated algorithms from the cryptolocker botnet:
+
+```{r} 
+bad20 <- c("btpdeqvfmjxbay.ru", "rrpmjoxjsbsw.ru", "wibiqshumvpns.ru", 
+           "mhdvnabqmbwehm.ru", "chyfrroprecy.ru", "uyhdbelswnhkmhc.ru",
+           "kqcrotywqigo.ru", "rlvukicfjceajm.ru", "ibxaoddvcped.ru", 
+           "tntuqxxbvxytpif.ru", "heksblnvanyeug.ru", "kexngyjudoptjv.ru",
+           "hwenbesxjwrwa.ru", "oovftsaempntpx.ru", "uipgqhfrojbnjo.ru", 
+           "igpjponmegrxjtr.ru", "eoitadcdyaeqh.ru", "bqadfgvmxmypkr.ru", 
+           "bycoifplnumy.ru", "aeqcwsreocpbm.ru")
+dgaPredict(bad20)
+```
+
+Algorithm is about 98% effective, so some things are misclassified, the "prob" (probability) column can be used to manually inspect some of the output.
+
+```{r}
+borderline <- c("20minutes.fr", "siriusxm.com", "fileblckr.com", "haus-am-brunnen.de", 
+                "left21.com", "rw3ramr.info", "letter861cod.info", "mintadelpyjychw.ru", 
+                "zsdm7erb.us", "surceskmgf.net")
+
+dgaPredict(borderline)
+```
+
+So if the application is more sensitive to misclassification, the threshold for classification can be adjusted up or down, notice the probability shown is the confidence in classification, so it will dip beneath 0.5 for legitimate domains if dgaThreshold is raised.
+
+```{r} 
+dgaPredict(borderline, dgaThreshold=0.55)
+```
+
+This uses a Random Forest model:
+```{r echo=F}
+data(rfFit)
+print(rfFit)
+```
+
