@@ -43,6 +43,7 @@ dgaPredictDomain <- function(dns, dgaThreshold=0.5) {
 #' @param text character object (or vector) of words to match
 #' @param cnum logical whether to count numbers as a match or not, if not counted and the word contains numbers it will never be 100\% match.
 #' @import stringr
+#' @export
 wmatch <- function(text, cnum = T) {
   matched <- lapply(text, function(txt) rep(F, nchar(txt)))
   if(cnum) {
