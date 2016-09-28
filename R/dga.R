@@ -5,9 +5,10 @@
 #' 
 #' @param dns vector of dns names to classify
 #' @param dgaThreshold the threshold at which to split DGA from legit
+#' @import urltools
 #' @export
 dgaPredict <- function(dns, dgaThreshold=0.5) {
-  pdomain <- data.frame(name=dns, domain=tldextract(tolower(dns))$domain, stringsAsFactors = F)
+  pdomain <- data.frame(name=dns, domain=suffix_extract(tolower(dns))$domain, stringsAsFactors = F)
   dgaPredictDomain(pdomain$domain, dgaThreshold)
 }
 
@@ -69,7 +70,7 @@ wmatch <- function(text, cnum = T) {
 
 #' Tranform a vector of DNS entries to a clean data frame
 #' 
-#' given a vector of DNS entries, this will call tldextract and do
+#' given a vector of DNS entries, this will call urltools::suffix_extract and do
 #' the following clean up tasks:
 #' * remove any invalid entries (no top level domain matched)
 #' * remove any duplciated entries
@@ -78,9 +79,9 @@ wmatch <- function(text, cnum = T) {
 #' @param dnames the input vector of names
 #' @param strip.len numeric on which to remove variables
 #' @export
-#' @import tldextract
+#' @import urltools
 cleandns <- function(dnames, strip.len=6) {
-  tld <- tldextract(dnames)
+  tld <- suffix_extract(dnames)
   # pull invalid names
   tld <- tld[!is.na(tld$tld), ]
   # remove duplicates
